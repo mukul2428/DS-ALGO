@@ -528,3 +528,166 @@ class Solution
     }
 }
 
+//Day 8 (2. Minimum number of platform required for railway)
+
+//Function to find the minimum number of platforms required at the
+    //railway station such that no train waits.
+    static int findPlatform(int arrival[], int dept[], int n)
+    {
+        // add your code here
+        Arrays.sort(arrival);
+        Arrays.sort(dept);
+        
+        int platform_needed = 1; //initially first train will need one platform
+        int min_platform = 1;
+        
+        int i = 1, j = 0; //i=1,as we will check arrival time of second train
+                          //j=0, we will check departure time of first train
+        
+        while(i<arrival.length && j<dept.length)
+        {
+            //departure time is more
+            if(arrival[i] <= dept[j]) //"=" because if arrival and dept are same then we need one more plaform
+            {
+                //a platform is already filled. so we need another plaform
+                platform_needed++;
+                i++; //train arrived, now move to another one
+            }
+            else //arrival time is more. so need to depart last train or vacant last platform
+            {
+                platform_needed--;
+                j++;
+            }
+            //plaform required
+            min_platform = Math.max(min_platform, platform_needed);
+        }
+        return min_platform;
+    }
+
+//Day 8 (3. Job sequencing problem)
+
+//Function to find the maximum profit and the number of jobs done.
+    int[] JobScheduling(Job arr[], int n) //this is class job array, job class has id, profit and deadline
+    {
+        //sort array in decreasing order using comparator 
+        Arrays.sort(arr, (a,b) -> (b.profit - a.profit));
+        
+        //find max. deadline
+        int max = 0;
+        for(int i=0; i<n; i++)
+        {
+            if(arr[i].deadline > max)
+            max = arr[i].deadline;
+        }
+        //array of size maximum deadline
+        int[] x = new int[max+1]; 
+        
+        //i=1 as job id start from 1
+        for(int i = 1; i<=max; i++)
+        {
+            x[i] = -1;
+        }
+        
+        int jobProfit = 0, countJobs = 0;
+        
+        //iterating over Job array(checking every job)
+        for(int i=0; i<n; i++)
+        {
+            //starting from deadline of every job till 0
+            for(int j=arr[i].deadline; j>0; j--)
+            {
+                //if we get any vacant space then put job there
+                if(x[j] == -1)
+                {
+                    x[j] = arr[i].id;
+                    jobProfit += arr[i].profit; //increased total profit by current job's profit
+                    countJobs++; //increased count of job
+                    break;
+                }
+            }
+        }
+        int ans[] = new int[2];
+        ans[0] = countJobs;
+        ans[1] = jobProfit;
+        
+        return ans;
+    }   
+
+//Day 8 (4. Fractional Knapsack Problem)
+
+class Item {
+    int value, weight;
+    Item(int x, int y){
+        this.value = x;
+        this.weight = y;
+    }
+}
+
+//comparator to sort value/weight in decreasing order
+class sortComparator implements Comparator<Item>
+{
+    @Override
+    public int compare(Item a, Item b)
+    {
+        double x = (double)(a.value) / (double)(a.weight);
+        double y = (double)(b.value) / (double)(b.weight);
+        if(x < y)
+        {
+            return 1;
+        }
+        else if(x > y)
+        {
+            return -1;
+        }
+        else return 0;
+    }
+}
+
+class Solution
+{
+    //Function to get the maximum total value in the knapsack.
+    double fractionalKnapsack(int W, Item arr[], int n) 
+    {
+        // Your code here
+        
+        Arrays.sort(arr, new sortComparator());
+        int currWeight = 0; 
+        double finalValue = 0.0;
+        
+        for(int i = 0; i < n ; i++)
+        {
+            if(currWeight + arr[i].weight <= W) //if ith item + currWeight is less than knapsack weight
+            {
+                currWeight += arr[i].weight; //increase currWeight
+                finalValue += arr[i].value;
+            }
+            else //taking fraction of value and break;
+            {
+                int rem = W - currWeight; //check remaining capacity of knapsack
+                finalValue += ((double)arr[i].value / (double)arr[i].weight) * (double)rem;
+                break;
+            }
+            
+        }
+        return finalValue;
+    }
+} 
+
+//Day 8 (5. Greedy algorithm to find minimum number of coins)
+
+static void findMin(int V)
+{
+    ArrayList<Integer> arr = new ArrayList<>();
+
+    int[] r = {1,2,5,10,20,50,100,500,1000};
+
+    for(int i = n-1; i>=0; i--)
+    {
+        while(V >= r[i])
+        {
+            V -= r[i];
+            arr.add(r[i]);
+        }
+    }
+    System.out.println(arr);
+}     
