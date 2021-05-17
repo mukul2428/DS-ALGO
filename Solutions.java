@@ -418,7 +418,7 @@ public int maxProfit(int[] prices)
         
 }    
 
-//Day 3 (6. Rotate Matrix)
+//Day 2 (6. Rotate Matrix)
 
 public void rotate(int[][] matrix) {
         
@@ -449,6 +449,140 @@ public void rotate(int[][] matrix) {
         
     }
 
+//Day 3 (1.Search in 2D matrix)
+//Leetcode
+
+public boolean searchMatrix(int[][] matrix, int target) {
+        
+        //used binary search without extra space
+        int n = matrix.length;
+        int m = matrix[0].length;
+        
+        int beg = 0;
+        int end = (n * m) - 1;
+        
+        //arr[][] = {1,3,4},{9,6,3},{1,5,3}
+        //           0 1 2   3 4 5   6 7 8
+        //beg = 0, end = 8, mid = 4
+        // mid / m --> 4/3 = 1 and 4%3 = 1. So index will be (1,1) for mid = 4
+        
+        while(beg <= end)
+        {
+            int mid = beg + (end-beg)/2;
+            
+            //mid/m to find row and mid%m for column
+            if(matrix[mid / m][mid % m] == target)
+            {
+                return true;
+            }
+            else if(matrix[mid / m][mid % m] > target)
+            {
+                end = mid - 1;
+            }
+            else
+            {
+                beg = mid + 1;
+            }
+        }
+        return false;
+        
+    }
+
+//gfg
+
+public static int matSearch(int mat[][], int N, int M, int X)
+    {   
+        
+        //we have started from s to traverse the matrix because every element below it is large and left of it is small  
+        //               s 
+        //mat[][] = {1,3,4}
+        //          {5,6,7}
+        //          {8,9,9}      
+        
+        int j = M - 1, i = 0;
+        while(i < N && j >= 0)
+        {
+            if(mat[i][j] > X)
+            {
+                j--;
+            }
+            else if(mat[i][j] < X)
+            {
+                i++;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        return 0; //not found when matrix will be out of bound
+    }        
+
+
+//Day 3 (2. Pow(X,n))
+
+public double myPow(double x, int n) {
+        
+        double ans = 1.0;
+        
+        long nn = n; //taking long because while making negative a positive integer in case of Integer.MIN_VALUE the range of int will overflow
+        
+        //for negative case, make power positive
+        if(nn < 0)
+        {
+            nn = -nn;
+        }
+        while(nn > 0)
+        {
+            //if power is even --> 2^4 = (2*2)^2
+            if(nn % 2 == 0)
+            {
+                x = x*x;
+                nn = nn/2;
+            }
+            //if power is odd --> 2^5 = 2*(2)^4
+            else
+            {
+                ans = ans * x;
+                nn = nn - 1;
+            }
+        }
+        if(n < 0)
+        {
+            // for 2^-10 --> 1/2^10
+            ans = (double) 1.0 / (double) ans;
+        }
+        return ans;
+    }
+
+//Day 3 (3. Majority Element (>N/2 times)) 
+
+Method 1. O(n2) - Count frequency of elements and larger freq. element is our ans
+Method 2. O(n) and O(n) space - frequency using hashmap
+Method 3. Moore Voting Algo O(N) & O(1) Space
+
+explained in notes
+
+ public int majorityElement(int[] nums) {
+
+        int count = 0, element = 0; 
+
+        for(int i = 0; i < nums.length; i++)
+        {
+            if(count == 0)
+            {
+                element = nums[i];
+                count++;
+            }
+            else if(element != nums[i])
+                count--;
+            else
+                count++;
+        }
+        //majority element
+        return element;
+    }  
+    
 
 //Day 8 (1. N meeting in one room)
 
@@ -691,3 +825,71 @@ static void findMin(int V)
     }
     System.out.println(arr);
 }     
+    
+//Day 9 (1. Subset sums)
+
+ArrayList<Integer> subsetSums(ArrayList<Integer> arr, int N){
+        
+        ArrayList<Integer> ans = new ArrayList<>();
+        
+        //passed index of array and sum initially as 0
+        recur(0,0,ans,arr,N);
+        
+        //we need sorted ans
+        Collections.sort(ans);
+        
+        return ans;
+    }
+    
+    void recur(int index, int sum, ArrayList<Integer> ans, ArrayList<Integer> arr, int N)
+    {
+        //if index goes out of bound of array then add the sum to ans
+        if(index == N)
+        {
+            ans.add(sum);
+            return;
+        }
+        //picked up the element and increased the sum by element on that index
+        recur(index+1, sum + arr.get(index), ans, arr, N);
+        //didn't picked the element
+        recur(index+1, sum, ans, arr, N);
+        
+    } 
+
+//Day 9 (2. Subset 2)
+
+public List<List<Integer>> subsetsWithDup(int[] nums) {
+        
+        //sorted so that we can check for previous duplicate element in array
+        Arrays.sort(nums);
+        List<List<Integer>>ans = new ArrayList<>();
+        // passed index = 0 and innerList
+        recur(0, new ArrayList<>(), ans, nums);
+        
+        return ans;
+    }
+    
+    void recur(int index, List<Integer> innerList, List<List<Integer>> ans, int[] nums)
+    {
+        //add innerlist to ans list, initially innerlist will be empty([])
+        ans.add(new ArrayList<>(innerList));
+        
+        //this loop will run from specific index till end
+        // {3,2,4,1} --> from index 1 to end we can have many subsets like {2,4}, {2,1} etc
+        
+        for(int i = index; i < nums.length; i++)
+        {
+            //don't add duplicate elements in the list
+            if(i != index && nums[i] == nums[i-1])
+            {
+                continue;
+            }
+            //add elements to innerlist if not duplicate
+            innerList.add(nums[i]);
+            
+            recur(i+1, innerList, ans, nums);
+            
+            innerList.remove(innerList.size() - 1);
+            
+        }
+    }          
