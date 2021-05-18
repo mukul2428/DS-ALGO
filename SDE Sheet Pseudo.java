@@ -554,14 +554,14 @@ public double myPow(double x, int n) {
         }
         return ans;
     }
-
+    
 //Day 3 (3. Majority Element (>N/2 times)) 
 
 Method 1. O(n2) - Count frequency of elements and larger freq. element is our ans
 Method 2. O(n) and O(n) space - frequency using hashmap
-Method 3. Moore Voting Algo O(N) & O(1) Space
 
-explained in notes
+Method 3. Moore Voting Algo O(N) & O(1) Space
+//explained in notes
 
  public int majorityElement(int[] nums) {
 
@@ -582,6 +582,266 @@ explained in notes
         //majority element
         return element;
     }  
+
+
+//Day 3 (4. Majority Element (>N/3 times))
+
+
+//In linear time and in O(1) space
+//Using Boyer Moore Algo
+
+public List<Integer> majorityElement(int[] nums) {
+        
+        //in this we can have 2 majority elements. so, we will take two variables
+        
+        int num1 = 0, num2 = 0, ct1 = 0, ct2 = 0;
+        
+        for(int i = 0; i < nums.length; i++)
+        {
+            //take care of series of if else statement
+
+            //current element may be equal to num1
+            //ith element may be equal to num1
+            if(num1 == nums[i])
+            {
+                ct1++;
+            }
+             //for second largest element
+            else if(num2 == nums[i])
+            {
+                ct2++;
+            }
+            else if(ct1 == 0)
+            {
+                num1 = nums[i];
+                ct1++;
+            }
+            else if(ct2 == 0)
+            {
+                num2 = nums[i];
+                ct2++;
+            }
+            //we got third element which is neither equal to num1 nor num2
+            else
+            {
+                ct1--;
+                ct2--;
+            }
+        }
+        
+        //now we have to check whether our first and second largest elements are greater than floor of n/2
+        
+        List<Integer> li = new ArrayList<>();
+        
+        int count1 = 0, count2 = 0;
+        for(int i = 0; i<nums.length; i++)
+        {
+            if(nums[i] == num1)
+            {
+                count1++;
+            }
+            else if(nums[i] == num2)
+            {
+                count2++;
+            }
+        }
+        
+        if(count1 > (int)Math.floor(nums.length/3))
+            li.add(num1);
+        if(count2 > (int)Math.floor(nums.length/3))
+            li.add(num2);
+        
+        return li; 
+    }
+
+
+//Day 3(5. Grid Unique Paths)  
+
+
+Method 1. Recursion-->TLE
+
+public int uniquePaths(int m, int n) {
+
+        //using recursion, checking all possible paths
+        int i = 0, j = 0;
+        return recur(i, j, m, n);
+    }
+    int recur(int i, int j, int m, int n)
+    {
+        //when robot reached finish point
+        if(i == m - 1 && j == n - 1)
+        {
+            return 1; //return 1 whenever we reached the finish
+        }
+        //condition when pointer moves out of bound without reaching finish point
+        if(i >= m || j >= n)
+        {
+            return 0;
+        }
+        //sum of both right and left part of state space tree to get no. of unique paths
+               //moving bottom     //moving right
+        return recur(i+1, j, m, n) + recur(i, j+1, m, n);
+    }
+
+Method 2. DP --> O(m*n) space and time both
+
+public int uniquePaths(int m, int n) {
+
+        //using dp, checking all possible paths and storing same in table
+        int i = 0, j = 0;
+        int[][] dp = new int[m][n];
+        for(int p = 0; p<m; p++)
+        {
+            for(int q = 0; q<n; q++)
+            {
+                dp[p][q] = -1;
+            }
+        }
+        return recur(i, j, m, n, dp);
+    }
+    int recur(int i, int j, int m, int n, int[][] dp)
+    {
+        //when robot reached finish point
+        if(i == m - 1 && j == n - 1)
+        {
+            return 1; //return 1 whenever we reached the finish
+        }
+        //condition when pointer moves out of bound without reaching finish point
+        if(i >= m || j >= n)
+        {
+            return 0;
+        }
+        //if sum is same i.e we have already processed it
+        if(dp[i][j] != -1)
+            return dp[i][j];
+        //sum of both right and left part of state space tree to get no. of unique paths
+                              //moving bottom     //moving right
+        else return dp[i][j] = recur(i+1, j, m, n, dp) + recur(i, j+1, m, n, dp);
+    }
+
+Method 3. Using combination O(m-1)
+
+public int uniquePaths(int m, int n) {
+
+        //used nCr formula
+        int r = n-1, N = n+m-2; //total steps robot can take
+        //either (n+m-2)C(n-1) or (n+m-2)C(m-1)
+        long ans = 1;
+        for(int i = 1; i <= r; i++)
+        {
+            ans = ans * (long) (N - r + i) / i;
+        }
+        return (int) ans;
+    }  
+
+
+//Day 3(6. Reverse Pairs)
+//similar as inversion count
+public int reversePairs(int[] nums) {
+        
+       //during merge sort check for pairs 
+       return mergeSort(nums, 0, nums.length - 1);
+        
+    }
+    
+    int mergeSort(int nums[], int beg, int end)
+    {
+        int ans = 0;
+        if(beg < end)
+        {
+            int mid = (beg + end) / 2;
+            ans = mergeSort(nums, beg, mid);
+            ans += mergeSort(nums, mid + 1, end);
+            ans += merge(nums, beg, mid, end);
+        }
+        return ans;
+    }
+    int merge(int nums[], int beg, int mid, int end)
+    {
+        // first calculate ans then do further merging 
+        //we keep on iterating right array till our condition is satisfied
+        //stops when nums[i] <= 2 * num[j]
+        
+        int ans = 0, j = mid + 1;
+        for(int i = beg; i <= mid; i++) //for next iteration of i, j will start from its previous position only. 
+        {
+            while(j <= end && nums[i] > (2 * (long) nums[j]))
+                j++;
+            //if we reached out of bound or our condition failed
+            ans += (j - (mid+1));
+        }
+        
+        //now do merging step
+        
+        
+        ArrayList<Integer> arr = new ArrayList<>();
+        int left = beg, right = mid + 1;
+        while(left <= mid && right <= end)
+        {
+            if(nums[left] <= nums[right])
+            {
+                arr.add(nums[left++]);
+            }
+            else
+            {
+                arr.add(nums[right++]);
+            }
+        }
+        while(left <= mid)
+        {
+            arr.add(nums[left++]);
+        }
+        while(right <= end)
+        {
+            arr.add(nums[right++]);
+        }
+        for(int p = beg; p <= end; p++)
+        {
+            nums[p] = arr.get(p - beg);
+        }
+        
+//                          //+1 ,0 based indexing 
+//         int m = mid - beg + 1;
+//         int n = end - mid;
+        
+//         int[] left = new int[m];
+//         int[] right = new int[n];
+        
+//         for(int i = 0; i < m; i++)
+//         {
+//             left[i] = nums[beg + i];
+//         }
+//         for(int i = 0; i < n; i++)
+//         {
+//             right[i] = nums[mid + 1 + i];
+//         }
+           
+//         int k = beg, i = 0, j1 = 0;
+//         while (i < m && j < n) 
+//         {
+//             if (left[i] <= right[j]) {
+//                 nums[k] = left[i];
+//                 i++;
+//             }
+//             else {
+//                 nums[k] = right[j1];
+//                 j1++;
+//             }
+//             k++;
+//         }
+        
+//         while (i < m) {
+//             nums[k] = left[i];
+//             i++;
+//             k++;
+//         }
+ 
+//         while (j1 < n) {
+//             nums[k] = right[j1];
+//             j1++;
+//             k++;
+//         }
+        return ans;    
     
 
 //Day 8 (1. N meeting in one room)
