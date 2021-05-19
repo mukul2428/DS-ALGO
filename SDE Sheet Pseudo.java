@@ -843,6 +843,180 @@ public int reversePairs(int[] nums) {
 //         }
         return ans;    
     
+        
+ 
+//Day 4 (1. Two Sum)
+
+
+Method 1: using O(n2)
+
+Method 2: using hashMap
+
+public int[] twoSum(int[] nums, int target) {
+
+        
+    }Map<Integer, Integer> map = new HashMap<>();
+        int[] ans = new int[2];
+        for(int i = 0; i < nums.length; i++)
+        {
+            if(!map.containsKey(nums[i]))
+            {
+                map.put(target - nums[i], i);
+            }
+            else 
+            {
+                ans[0] = i;
+                ans[1] = map.get(nums[i]);
+                break;
+            }
+        }
+        return ans;
+
+
+//Day 4 (2. Four Sum)        
+
+
+Method 1. Using 3 pointers--.> O(n3logn + nlogn)
+
+1. Sort the array
+2. 4th element = target - sum of 3. So, search this fourth element using binary search.
+3. i = 0, j = i+1, k = j+1 and start binary search from k+1
+4. Use HashSet to avoid dupliactes
+
+Method 2. O(n3) Using two pointers --> O(n3)
+
+public List<List<Integer>> fourSum(int[] nums, int target) {
+        
+        List<List<Integer>> ans = new ArrayList<>();
+        
+        Arrays.sort(nums);
+        
+        //taking pointers two find sum of first elements
+        for(int i = 0; i < nums.length; i++)
+        {
+            for(int j = i + 1; j < nums.length; j++)
+            {
+                int t = target - (nums[i] + nums[j]);
+                //taking two more pointers to check for t sum
+                int left = j + 1, right = nums.length - 1;
+                while(left < right)
+                {
+                    if(t < nums[left] + nums[right])
+                        right--;
+                    else if(t > nums[left] + nums[right])
+                        left++;
+                    //found all four elements
+                    else
+                    {
+                        List<Integer> arr = new ArrayList<>();
+                        arr.add(nums[i]);
+                        arr.add(nums[j]);
+                        arr.add(nums[left]);
+                        arr.add(nums[right]);
+                        ans.add(arr);
+                        
+                        //if 3rd and 4th element is added to list to give sum 
+                        //as target then avoid duplicates of these elements 
+                        //for left
+                        while(left < right && nums[left] == arr.get(2))
+                        {
+                            left++;
+                        }
+                        //for right
+                        while(left < right && nums[right] == arr.get(3))
+                        {
+                            right--;
+                        }
+                    }
+                }
+                //avoid duplicates for i and j also
+                //took j+1 bcz when loop while update j value will increase
+                while(j + 1 < nums.length && nums[j] == nums[j+1])
+                {
+                    j++;
+                }
+            }
+            while(i + 1 < nums.length && nums[i] == nums[i+1])
+            {
+                i++;
+            }
+        }
+        return ans;
+
+
+//Day 4 (3. Longest Consecutive sequence)
+
+
+O(n3) --> TLE
+
+public int longestConsecutive(int[] nums) 
+    {
+        int longestStreak = 0;
+
+        for (int num : nums) 
+        {
+            int currentNum = num;
+            int currentStreak = 1;
+
+            while (arrayContains(nums, currentNum + 1)) 
+            {
+                currentNum += 1;
+                currentStreak += 1;
+            }
+
+            longestStreak = Math.max(longestStreak, currentStreak);
+        }
+         return longestStreak;
+    }
+
+ private boolean arrayContains(int[] arr, int num) 
+     {
+        for (int i = 0; i < arr.length; i++)
+        {
+            if (arr[i] == num) {
+                return true;
+            }
+        }
+        return false;
+    }
+Method 2 :- Using Set ---> O(3N)
+
+public int longestConsecutive(int[] nums) 
+    {
+        //to avoid duplicate used set
+        Set<Integer> set = new HashSet<>();
+        int max = 0;
+
+        //add all values to set
+        for(int i = 0; i < nums.length; i++)
+        {
+            set.add(nums[i]);
+        }
+
+        for(int i = 0; i < nums.length; i++)
+        {
+            //we want minimum element of array which makes longest subsequence
+            //so, whenever we get any element whose lesser value doesn't exist
+            //then we start iteration from it
+            if(!set.contains(nums[i] - 1))
+            {
+                int currValue = nums[i];
+                int count = 1;
+
+                //checking if greater value of current exists or not
+                //checking all greater values
+                while(set.contains(currValue + 1))
+                {
+                    currValue++;
+                    count++;
+                }
+                max = Integer.max(max, count);
+            }
+        }
+        return max;
+    }               
+        
+        
 
 //Day 8 (1. N meeting in one room)
 
