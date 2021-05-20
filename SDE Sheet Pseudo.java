@@ -1014,7 +1014,155 @@ public int longestConsecutive(int[] nums)
             }
         }
         return max;
-    }               
+    } 
+    
+    
+
+//Day 4 (4. Largest Subarray with 0 sum)
+
+Method 1. O(n2)
+int maxLen(int arr[], int n)
+    {
+        // Your code here
+        int len = 0;
+        for(int  i = 0; i < n; i++)
+        {
+            int sum = 0;
+            for(int j = i; j < n; j++)
+            {
+                sum += arr[j];
+                if(sum == 0)
+                {
+                    len = Math.max(len, j - i + 1);
+                }
+            }
+        }
+        return len;
+    }
+
+
+Method 2. Using HashMap --> O(nlogn) and O(n) space
+//explained in notes
+    int maxLen(int arr[], int n)
+    {
+        
+        //map is used to store the sum of subarrays and index till we get that subarray
+        Map<Integer, Integer> map = new HashMap<>();
+        
+        int sum = 0, max = 0;
+        for(int i = 0; i < n; i++)
+        {
+            sum += arr[i];
+            
+            //if sum is zero for simple iteration
+            if(sum == 0)
+            {
+                max = i + 1; 
+            }
+            else
+            {
+                //if map already contains current sum
+                if(map.containsKey(sum))
+                {
+                    //(current index - previous index in map) will give us length of subarray having sum = 0        
+                    max = Math.max(max, i - map.get(sum));
+                }
+                //if map doesn't contains that sum
+                else
+                {
+                    map.put(sum, i);
+                }
+            }
+        }
+        return max;
+    }             
+
+
+//Day 4 Hard (5. Count number of subarrays with given XOR)
+
+
+ public int solve(ArrayList<Integer> A, int B) 
+ {
+        int count=0;
+        int xorr=0;
+        HashMap<Integer,Integer> freq=new HashMap<Integer, Integer>();
+        
+        //Y = xorr ^ B
+        for(int i=0;i<A.size();i++)
+        {
+            xorr^=A.get(i);
+            //Y = xorr ^ B
+            
+            //as number of times B occurred is equal to number of times Y (i.e xorr ^ B) occurred
+            //so, this condition is to check whether there is any subarray of k xor present in between our xorr
+            if(freq.get(xorr^B)!=null)
+            {
+                count+=freq.get(xorr^B);
+            }
+            //directly we found B then increase count
+            if(xorr==B)
+            {
+                count++;
+            }
+            //add all xor of subarrays and their frequencies in map
+            if(freq.get(xorr)!=null)
+            {
+                freq.put(xorr,freq.get(xorr)+1);
+            }
+            else{
+                freq.put(xorr,1);
+            }
+        }
+        return count;
+    }  
+
+
+//Day 4 (6. Longest substring without repeat)
+
+Method 1. Using HashMap 
+HashMap<Character, Integer> map = new HashMap<>();
+         
+        //took two pointers 
+        int left = 0, right = 0, max = 0;
+        //fixed left pointer and moving right
+        while(right < S.length())
+        {
+            //if repeat element is found in map then move left pointer
+            if(map.containsKey(S.charAt(right)))
+            {
+                //check if element found in map but that doesn't include in our current substring
+                left = Math.max(map.get(S.charAt(right)) + 1, left);
+            }
+            
+            //put every char in map
+            map.put(S.charAt(right), right);
+            //calculate max length
+            max = Math.max(max, right - left + 1);
+            
+            right++;
+        }
+        return max;
+
+Method 2: Using Set
+
+public int lengthOfLongestSubstring(String s) 
+    {
+        int n = s.length();
+        Set<Character> set = new HashSet<>();
+        int ans = 0, i = 0, j = 0;
+        while (i < n && j < n) 
+        {
+            if (!set.contains(s.charAt(j))){
+                set.add(s.charAt(j++));
+                ans = Math.max(ans, j - i);
+            }
+            else {
+                set.remove(s.charAt(i++));
+            }
+        }
+        return ans;
+    }        
+    
         
         
 
@@ -1326,4 +1474,49 @@ public List<List<Integer>> subsetsWithDup(int[] nums) {
             innerList.remove(innerList.size() - 1);
             
         }
+    }   
+    
+ 
+    
+//Day 9 (3. Combination sum 1)
+
+
+Using Recursion --> O(2^t * k), k is number of innerlist
+
+  public List<List<Integer>> combinationSum(int[] candidates, int target) {
+
+        List<List<Integer>> ans = new ArrayList<>();
+
+        //passed index for array(as 0) and innerlist
+        return recur(0, target, candidates, ans, new ArrayList<>());
+
+    }
+
+    List<List<Integer>> recur(int index, int target, int[] arr, List<List<Integer>> ans, List<Integer> ds)
+    {
+        //this base case i.e we got our combination
+        if(index == arr.length)
+        {
+            //we got combination now add to ans list
+            if(target == 0)
+            {
+                //this will be linear time
+                ans.add(new ArrayList<>(ds));
+            }
+            return ans;
+        }
+        //searching for our combination
+        //case when we are taking current element
+        if(arr[index] <= target)
+        {
+            //add curr element to list
+            ds.add(arr[index]);
+            //i will remain same, as we can take same number any no. of times
+            recur(index, target - arr[index], arr, ans, ds);
+            //after recursion is over then remove last elements from innerlist
+            ds.remove(ds.size()-1);
+        }
+        //case when we are not considering curr elements, now increase index value
+        recur(index + 1, target, arr, ans, ds);
+        return ans;
     }          
