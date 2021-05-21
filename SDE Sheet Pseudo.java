@@ -1519,4 +1519,163 @@ Using Recursion --> O(2^t * k), k is number of innerlist
         //case when we are not considering curr elements, now increase index value
         recur(index + 1, target, arr, ans, ds);
         return ans;
-    }          
+    }  
+    
+
+  
+//Day 9 (4. Combination sum 2)
+
+public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        
+        List<List<Integer>> ans = new ArrayList<>();
+        
+        //first sort the array bcz we need to remove duplicate elements
+        Arrays.sort(candidates);
+        
+        //index is passed as 0 and new innerList is passed
+        //we passes the index because whenever we go deep in recursion we need
+        //the index from which we need to pick the element
+        recur(0, target, candidates, ans, new ArrayList<>());
+        
+        return ans;
+    }
+    
+    void recur(int index, int t, int[] arr, List<List<Integer>> ans, List<Integer> ds)
+    {
+        //base case 
+        if(t == 0)
+        {
+            ans.add(new ArrayList<>(ds));
+            return;
+        }
+        //everytime starting from specific index till last
+        for(int i = index; i < arr.length; i++)
+        {
+            //i > index means that we need not to pick duplicate element
+            if(i > index && arr[i] == arr[i-1])
+            {
+                continue;
+            }
+            //break the recursion if current element is greater than target
+            if(arr[i] > t)
+            {
+                break;
+            }
+            //add curr element to list to make combination
+            ds.add(arr[i]);
+            
+            //recursive call for i+1
+            recur(i + 1, t - arr[i], arr, ans, ds);
+            
+            //remove last element of innerList after recursive call
+            ds.remove(ds.size() - 1);
+        }
+    }
+
+//Day 9 (5. Palindrome Partitioning)
+
+
+
+public List<List<String>> partition(String s) {
+
+        List<List<String>> ans = new ArrayList<>();
+
+        recur(0, s, ans, new ArrayList<>());
+
+        return ans;
+
+    }
+
+    void recur(int index, String s, List<List<String>> ans, List<String> ds)
+    {
+        //base case
+        if(index == s.length())
+        {
+            ans.add(new ArrayList<>(ds));
+            return;
+        }
+        //startig from specific index
+        for(int i = index; i < s.length(); i++)
+        {
+            //check if index to i is palindrome or not
+            if(palindrome(s, index, i))
+            {
+                //if particular string is palindrome then add it
+                ds.add(s.substring(index, i+1));
+                //recur for next characters
+                recur(i + 1, s, ans, ds);
+                //remove last character from inner list
+                ds.remove(ds.size() - 1);
+            }
+        }
+    }
+    boolean palindrome(String s, int index, int i)
+    {
+        while(index < i)
+        {
+            if(s.charAt(i) == s.charAt(index))
+            {
+                index++;
+                i--;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+//Day 9 (6. K-th permutation Sequence)  
+
+
+public String getPermutation(int n, int k) {
+        
+        //this list will store starting value of n! permutations
+        //i.e for n = 4, it will store 1 to 4 numbers which can be starting 
+        //for all permutations
+        ArrayList<Integer> block = new ArrayList<>();
+        
+        //this is for block size, i.e fixed or two then how many perm. remain.
+        int fact = 1;
+        
+        //calculating factorial of n-1, as we have fixed first digit then left
+        //permutations will be (n-1)!--> for n = 4, if we fix 1 as starting 
+        //element then rem. perm. will be 3!-->{1,2,3,4},{1,2,4,3},{1,3,2,4}etc 
+        for(int i = 1; i < n; i++)
+        {
+            fact = fact * i;
+            //also added elements to list
+            block.add(i);
+        }
+        //added nth element to list
+        block.add(n);
+        
+        String ans ="";
+        
+        //for 0 based indexing
+        k = k - 1;
+        
+        while(true)
+        {
+            //took element from from k/fact index from block of perm. and added to ans
+            //k/fact to find the element from which kth perm will start 
+            ans += block.get(k / fact);
+            //now we have fixed one index and used one elemnt from n, so remove it also from block
+            block.remove(k / fact);
+            
+            //iterate till all elements are not removed from list
+            if(block.size() == 0)
+                break;
+            
+            //also reduce size of k for n-1
+            k = k % fact;
+            // updated block size or no. of prem. remaining every time
+            // 3! = 6 now next time --> 6/3 = 2 i.e 2!
+            fact = fact / block.size();
+        }
+        return ans;
+    }
+    
