@@ -1679,3 +1679,202 @@ public String getPermutation(int n, int k) {
         return ans;
     }
     
+    
+//Day 10 (1. Print all Permutations of a string/array) 
+
+Method 1. Used extra space for boolean array(O(n!*n) and O(n) space)
+
+public List<List<Integer>> permute(int[] nums) {
+
+        List<List<Integer>> ans = new ArrayList<>();
+
+        //to check whether current element is used not. so, there is need for index to be passed in recursion
+        boolean[] bool = new boolean[nums.length];
+
+        recur(nums, bool, ans, new ArrayList<>());
+
+        return ans;
+
+    }
+
+    void recur(int[] nums, boolean[] bool, List<List<Integer>> ans, ArrayList<Integer> ds)
+    {
+        //base condition
+        if(ds.size() ==  nums.length)
+        {
+            ans.add(new ArrayList<>(ds));
+            return;
+        }
+        // using loop becoz at starting index we have option to choose any element
+                //i = 0, as we have taken boolean array to check whether we can take curr element or not
+        for(int i = 0; i < nums.length; i++)
+        {
+            //first check whether current element is used for making current permutation or not 
+            //choose only that element which is not used
+            if(!bool[i])
+            {
+                //make curr element as used
+                bool[i] = true;
+                ds.add(nums[i]);
+                //recur for deep dive in recursion 
+                recur(nums, bool, ans, ds);
+
+                //remove last element after recursion and also make that element unused
+                ds.remove(ds.size() - 1);
+                bool[i] = false;
+            }
+        }
+    }
+
+Method 2. Without extra space(O(n!*n))
+
+ public List<List<Integer>> permute(int[] nums) {
+
+        List<List<Integer>> ans = new ArrayList<>();
+
+        //no need for innerlist to pass, becoz we are changing aur array everytime.
+        recur(0, nums, ans);
+
+        return ans;
+
+    }
+
+    void recur(int index, int[] nums, List<List<Integer>> ans)
+    {
+        //base condition
+        if(index == nums.length)
+        {
+            List<Integer> ds = new ArrayList<>();
+            //now add all elements of our swapped array into innerList
+            for(int i = 0; i < nums.length; i++)
+            {
+                ds.add(nums[i]);
+            }
+            ans.add(new ArrayList<>(ds));
+            return;
+        }
+        // using loop becoz at starting index we have option to swap with any element
+        for(int i = index; i < nums.length; i++)
+        {
+            //swap of index with i in array;
+            swap(nums, i, index);
+            //now increase index pointer to next for deep dive using recursion
+            recur(index + 1, nums, ans);
+            //again swap the elements to get back to same positions in array
+            swap(nums, i, index);
+
+        }
+    }
+    void swap(int[] nums, int i, int index)
+    {
+        int temp = nums[i];
+        nums[i] = nums[index];
+        nums[index] = temp;
+    }  
+
+
+//Day 10 (2. N queens Problem)
+
+
+//comparator to sort list of list
+class ListComparator<T extends Comparable<T>> implements Comparator<List<T>> 
+{
+
+      @Override
+      public int compare(List<T> o1, List<T> o2)
+      {
+        for (int i = 0; i < Math.min(o1.size(), o2.size()); i++) 
+        {
+          int c = o1.get(i).compareTo(o2.get(i));
+          if (c != 0) 
+          {
+            return c;
+          }
+        }
+        return Integer.compare(o1.size(), o2.size());
+      }
+    
+}
+
+class Solution
+{
+    static ArrayList<ArrayList<Integer>> nQueen(int n) {
+        
+        //initially all are zero
+        int[][] board = new int[n][n];
+        
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        
+        recur(0, board, res);
+        
+        // Collections.sort(res);
+        Collections.sort(res, new ListComparator<>());
+        
+        return res;
+    }
+    
+    static void recur(int col, int[][] board, ArrayList<ArrayList<Integer>> res) 
+    {
+        if(col == board.length) 
+        {
+            res.add(construct(board));
+            return;
+        }
+        
+        for(int row = 0; row < board.length; row++)
+        {
+            if(validate(board, row, col)) 
+            {
+                board[row][col] = col + 1;
+                recur(col + 1, board, res);
+                board[row][col] = 0;
+            }
+        }
+    }
+    
+    static boolean validate(int [][] board, int row, int col) 
+    {
+        int duprow = row;
+        int dupcol = col; 
+        while(row >= 0 && col >= 0) 
+        {
+            if(board[row][col] > 0) return false; 
+            row--;
+            col--; 
+        }
+        
+        row = duprow; 
+        col = dupcol; 
+        while(col >= 0) 
+        {
+            if(board[row][col] > 0) return false; 
+            col--; 
+        }
+        
+        row = duprow; 
+        col = dupcol; 
+        while(col >= 0 && row < board.length) 
+        {
+            if(board[row][col] > 0) return false; 
+            col--;
+            row++; 
+        }
+        return true; 
+    }
+    
+    static ArrayList<Integer> construct(int[][] board) 
+    {
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i = 0; i < board.length; i++) 
+        {
+            for(int j = 0; j < board.length; j++)
+            {
+                if(board[i][j] > 0)
+                res.add(board[i][j]);
+            }
+        }
+        return res;
+    }
+    
+}       
+    
