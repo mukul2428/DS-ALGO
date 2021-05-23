@@ -1800,7 +1800,7 @@ class Solution
 {
     static ArrayList<ArrayList<Integer>> nQueen(int n) {
         
-        //initially all are zero
+        //used a matrix as chess board , initially all are zero
         int[][] board = new int[n][n];
         
         ArrayList<ArrayList<Integer>> res = new ArrayList<>();
@@ -1815,17 +1815,23 @@ class Solution
     
     static void recur(int col, int[][] board, ArrayList<ArrayList<Integer>> res) 
     {
+        //base condition, if we have filled queens till last column
         if(col == board.length) 
         {
+            // to tranfer data from matrix to list
             res.add(construct(board));
             return;
         }
         
+        //use loop as at starting we have choice to place queen at any place
         for(int row = 0; row < board.length; row++)
         {
+            //check if curr position is safe to place
             if(validate(board, row, col)) 
             {
+                //add position(at which we have placed the queen) to matrix
                 board[row][col] = col + 1;
+                //checking for next column using recursion
                 recur(col + 1, board, res);
                 board[row][col] = 0;
             }
@@ -1836,6 +1842,7 @@ class Solution
     {
         int duprow = row;
         int dupcol = col; 
+        //Upperdaigonal
         while(row >= 0 && col >= 0) 
         {
             if(board[row][col] > 0) return false; 
@@ -1844,7 +1851,8 @@ class Solution
         }
         
         row = duprow; 
-        col = dupcol; 
+        col = dupcol;
+        //left boxes 
         while(col >= 0) 
         {
             if(board[row][col] > 0) return false; 
@@ -1853,6 +1861,7 @@ class Solution
         
         row = duprow; 
         col = dupcol; 
+        //below diagonals
         while(col >= 0 && row < board.length) 
         {
             if(board[row][col] > 0) return false; 
@@ -1875,6 +1884,172 @@ class Solution
         }
         return res;
     }
+}
+
+//OR (leetcode) using less complexity
+
+ public List<List<String>> solveNQueens(int n) 
+    {
+        char[][] board = new char[n][n];
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++)
+                board[i][j] = '.';
+        List<List<String>> res = new ArrayList<List<String>>();
+        //3 arrays for valid position of queens
+        int leftRow[] = new int[n];
+        int upperDiagonal[] = new int[2*n-1]; //if n = 4, then array is of 9
+        int lowerDiagonal[] = new int[2*n-1]; 
+        solve(0, board, res, leftRow, lowerDiagonal, upperDiagonal);
+        return res;
+    }
     
-}       
+    
+    
+    private void solve(int col, char[][] board, List<List<String>> res, int leftRow[], int lowerDiagonal[], int upperDiagonal[]) 
+    {
+        //base condition
+        if(col == board.length) 
+        {
+            res.add(construct(board));
+            return;
+        }
+        
+        for(int row = 0; row < board.length; row++) 
+        {
+            //if leftrow and both upper ans lower diagonals are not occupied
+            if(leftRow[row] == 0 && lowerDiagonal[row+col] == 0 && upperDiagonal[board.length -1 + col - row] == 0) 
+            {
+                board[row][col] = 'Q';
+                leftRow[row] = 1;
+                lowerDiagonal[row+col] = 1;
+                upperDiagonal[board.length-1 + col - row] = 1;
+                solve(col+1, board, res, leftRow, lowerDiagonal, upperDiagonal );
+                board[row][col] = '.';
+                leftRow[row] = 0;
+                lowerDiagonal[row+col] = 0;
+                upperDiagonal[board.length - 1 + col - row] = 0;
+            }
+        }
+    }
+    
+    
+    private List<String> construct(char[][] board) 
+    {
+        List<String> res = new LinkedList<String>();
+        for(int i = 0; i < board.length; i++) 
+        {
+            String s = new String(board[i]);
+            res.add(s);
+        }
+        return res;
+    } 
+
+
+
+//Day 10 (3. Sudoku) 
+
+
+ public void solveSudoku(char[][] board) 
+ {
+        
+        sudoko(board);
+        
+ }
+    boolean sudoko(char[][] arr)
+    {
+        for(int i = 0; i < arr.length; i++)
+        {
+            for(int j = 0; j < arr[0].length; j++)
+            {
+                //check for first empty box in sudoko
+                if(arr[i][j] == '.')
+                {
+                    //trying for all 1-9 digit
+                    for(char k = '1'; k <= '9'; k++)
+                    {
+                        //check if it is valid to put 1-9 in particular box
+                        if(valid(arr, i, j, k))
+                        {
+                            arr[i][j] = k;
+                            //after filling one box now fill next empty box
+                            //so for this use recursion
+                            if(sudoko(arr))
+                                return true; //true if all boxes are filled and we have got our ans
+                            else
+                                //if we can't fill any box then backtrack to change our previous filled boxes
+                                arr[i][j] = '.';
+                        }
+                    }
+                    //return false if we are unable to fill any box with 1-9
+                    return false;
+                }
+            }
+        }
+        //if all boxes are already filled
+        return true;
+    }
+    private boolean valid(char[][] board, int row, int col, char c)
+    {
+        for(int i = 0; i < 9; i++) 
+        {
+            //check column
+            if(board[i][col] != '.' && board[i][col] == c) return false; 
+            //check row
+            if(board[row][i] != '.' && board[row][i] == c) return false; 
+            //check 3*3 block
+            if(board[3 * (row / 3) + i / 3][ 3 * (col / 3) + i % 3] != '.' && 
+board[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == c) return false; 
+        }
+        return true;
+    } 
+
+
+
+//Day 10 (4. M coloring problem)
+
+
+//Function to determine if graph can be coloured with at most M colours such
+    //that no two adjacent vertices of graph are coloured with same colour.
+    public static boolean graphColoring(List<Integer>[] G, int[] color, int node, int C) 
+    {
+        // base condition 
+        //if we have reached last node i,e we have colored all adjacent nodes with different colors
+        if(node == G.length)
+        {
+            return true;
+        }
+        //at starting we can try with any color so we are using loop
+        //looping from color 1 to color m
+        for(int i = 1; i <= C; i++)
+        {
+            //checking whether it is safe to place that color or not
+            //passing curr. node and curr. node that we want to use
+            if(Safe(node, G, color, i))
+            {
+                //storing color at curr node as i(1 to m)
+                color[node] = i;
+                if(graphColoring(G, color, node + 1, C))
+                {
+                    return true;
+                }
+                //do backtracking if placing that color is not possible
+                color[node] = 0;
+            }
+        }
+        //return false
+        return false;
+    }
+    
+    static boolean Safe(int node, List<Integer>[] G, int[] color, int colour)
+    {
+        for(int neig : G[node])
+        {
+            //if color of neighour node is same as color we want at curr node
+            if(color[neig] == colour)
+            {
+                return false;
+            }
+        }
+        return true;
+    }       
     
