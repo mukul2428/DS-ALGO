@@ -2051,5 +2051,72 @@ board[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == c) return false;
             }
         }
         return true;
+    } 
+    
+    
+ //Day 10 (5. Rat in a maze)
+
+
+public static ArrayList<String> findPath(int[][] arr, int n) {
+        // Your code here
+        
+        ArrayList<String> ans = new ArrayList<>();
+        String s = "";
+        //visited array is used so that we don't use same block again in our path
+        boolean[][] visited = new boolean[n][n];
+        //recur only if our rat is at block where arr[0][0] = 1
+        if(arr[0][0] == 1)
+        {
+            recur(arr, 0, 0, n, s, ans, visited);
+        }
+        if(ans.size() == 0)
+        ans.add("-1");
+        return ans;
+    }
+    //i and j are for matrix[i][j]
+    static void recur (int [][] arr, int i, int j, int n, String s, ArrayList<String> ans, boolean[][] visited)
+    {
+        //base condition
+        if(i == n-1 && j == n-1)
+        {
+            ans.add(s);
+            return;
+        }
+        //down, check if our down block is unvisited or not
+        if(i+1 < n && !visited[i+1][j] && arr[i+1][j] == 1)
+        {
+            //make our current block as visited
+            visited[i][j] = true;
+            //recur for down
+            recur(arr, i + 1, j, n, s + "D", ans, visited);
+            //after recursion make visited as unvisited
+            visited[i][j] = false;
+        }
+        //left
+        if(j-1 >= 0 && !visited[i][j-1] && arr[i][j-1] == 1)
+        {
+            
+            visited[i][j] = true;
+            recur(arr, i, j-1, n, s + "L", ans, visited);
+            //after recursion make visited as unvisited
+            visited[i][j] = false;
+        }
+        //right
+        if(j+1 < n && !visited[i][j+1] && arr[i][j+1] == 1)
+        {
+        
+            visited[i][j] = true;
+            recur(arr, i, j+1, n, s + "R", ans, visited);
+            //after recursion make visited as unvisited
+            visited[i][j] = false;
+        }
+        //up
+        if(i-1 >= 0 && !visited[i-1][j] && arr[i-1][j] == 1)
+        {
+            visited[i][j] = true;
+            recur(arr, i - 1, j, n, s + "U", ans, visited);
+            //after recursion make visited as unvisited
+            visited[i][j] = false;
+        }
     }       
     
