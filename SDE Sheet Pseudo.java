@@ -2054,7 +2054,7 @@ board[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == c) return false;
     } 
     
     
- //Day 10 (5. Rat in a maze)
+//Day 10 (5. Rat in a maze)
 
 
 public static ArrayList<String> findPath(int[][] arr, int n) {
@@ -2118,5 +2118,48 @@ public static ArrayList<String> findPath(int[][] arr, int n) {
             //after recursion make visited as unvisited
             visited[i][j] = false;
         }
-    }       
+    }  
+    
+    
+
+//Day 10 (6. Word Break (print all ways))
+
+static boolean isEmpty = true;
+    
+    static List<String> wordBreak(int n, List<String> dict, String s)
+    {
+        List<String> ans = new ArrayList<>();
+        
+        //based inde as 0 for iterating over s string
+        recur(0, "", dict, s, s.length() , ans);
+        
+         if(isEmpty)
+            ans.add("Empty");
+         return ans;       
+    
+    }
+    
+    public static void recur(int start, String result, List<String> dict, String s, int end, List<String> ans)
+    {
+        for(int i = start; i < end; i++)
+        {
+            //everytime take out substring from string s
+            String prefix = s.substring(start, i + 1);
+            
+            //check whether our taken substring from s is present in our dict list or not
+            if(dict.contains(prefix))
+            {
+                //if we have reached end of string s i.e we have found our result string
+                if(i == end - 1)
+                {
+                    isEmpty = false;
+                    result += prefix;
+                    ans.add(result);
+                    return;
+                }
+                //recur for next characters of string s i.e after cat string go for s character 
+                recur(i + 1, result + prefix + " ", dict, s, end, ans);
+            }
+        }
+    }   
     
