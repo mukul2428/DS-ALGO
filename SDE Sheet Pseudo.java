@@ -2161,5 +2161,214 @@ static boolean isEmpty = true;
                 recur(i + 1, result + prefix + " ", dict, s, end, ans);
             }
         }
-    }   
+    } 
     
+    
+    
+ //Day 23 (2. BFS)
+
+
+public static void main(String[] args)
+    {
+        Scanner sc = new Scanner(System.in);
+        int node = sc.nextInt(); //no.of nodes
+
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        //<= for 1 base indexing i.e starting vertex from 1 to V
+        for(int i = 0; i <= node; i++)
+        {
+            ans.add(new ArrayList<>());
+        }
+        int edges = sc.nextInt(); //no. of edges
+        //making graphs by joining vertices with edges
+        for(int i = 1; i <= edges; i++)
+        {
+            System.out.println("Enter u and v");
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            ans.get(u).add(v);
+            ans.get(v).add(u);
+        }
+
+        //bfs
+
+        ArrayList<Integer> print = new ArrayList<>();
+        //V+1 for 1 based indexing nodes---> nodes start from 1 to V not 0 to V-1
+        boolean[] bool = new boolean[node + 1];
+        //using loop inorder to check every node is traversed using bfs or not
+        //helpful for unconnected graph
+        for(int i = 1; i <= node; i++)
+        {
+            //check if current node is visited or not
+            if(!bool[i])
+            {
+                Queue<Integer> q = new LinkedList<>();
+
+                q.add(i);
+                bool[i] = true;
+
+                while(!q.isEmpty())
+                {
+                    //take out node from queue and add to list
+                    int nd = q.poll();
+                    print.add(nd);
+
+                    //traverse neighbour nodes of curr nodes
+                    for(Integer neighbour : ans.get(nd))
+                    {
+                        if(!bool[neighbour])
+                        {
+                            q.add(neighbour);
+                            bool[neighbour] = true;
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(print);
+    }         
+
+
+//Day 23 (3. DFS)
+
+
+public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+        int node = sc.nextInt(); //no.of nodes
+
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        //for 1 base indexing i.e starting vertex from 1 to V
+        for(int i = 0; i <= node; i++)
+        {
+            ans.add(new ArrayList<>());
+        }
+        int edges = sc.nextInt(); //no. of edges
+        //making graphs by joining vertices with edges
+        for(int i = 1; i <= edges; i++)
+        {
+            System.out.println("Enter u and v");
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            ans.get(u).add(v);
+            ans.get(v).add(u);
+        }
+
+        //dfs
+        ArrayList<Integer> print = new ArrayList<>();
+        //n + 1 for 1 based indexing i.e node start from 1 to V
+        boolean[] bool = new boolean[node + 1];
+
+        //loop helpful for unconnected graph
+        //for 1 based indexing i.e node start from 1 to V
+        for(int i = 1; i <= node; i++)
+        {
+            if(!bool[i])
+            {
+                //recur(print, bool, ans, i);
+                usingStack(print, bool, ans, i);
+            }
+        }
+        System.out.println(print);
+
+    }
+
+    private static void usingStack(ArrayList<Integer> print, boolean[] bool, ArrayList<ArrayList<Integer>> ans, int i) {
+
+        Stack<Integer> stack = new Stack<>();
+        stack.add(i);
+        bool[i] = true;
+
+        while(!stack.isEmpty())
+        {
+            int nd = stack.pop();
+            print.add(nd);
+            //for neighbours
+            for(Integer neighbour : ans.get(nd))
+            {
+                if(!bool[neighbour])
+                {
+                    stack.add(neighbour);
+                    bool[neighbour] = true;
+                }
+            }
+        }
+    }
+
+    private static void recur(ArrayList<Integer> print, boolean[] bool, ArrayList<ArrayList<Integer>> ans, int i)
+    {
+
+        //check for adjacent nodes
+        for(Integer nd : ans.get(i))
+        {
+            if(!bool[nd])
+            {
+                bool[nd] = true;
+                print.add(nd);
+                recur(print, bool, ans, nd);
+            }
+        }
+    }
+
+
+//Day 23 (4. Detect A cycle in Undirected Graph)
+
+
+//Function to detect cycle in an undirected graph.
+    class Node
+    {
+        int node;
+        int prevNode;
+        Node(int node, int prevNode)
+        {
+            this.node = node;
+            this.prevNode = prevNode;
+        }
+    }
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        // Code here
+        boolean[] bool = new boolean[V];
+        for(int i = 0; i < V; i++)
+        {
+            if(!bool[i])
+            {
+                //check for cycle for each component of graph
+                if(cycleBfs(i, V, bool, adj))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    boolean cycleBfs(int i, int V, boolean[] bool,  ArrayList<ArrayList<Integer>> adj)
+    {
+        Queue<Node> q = new LinkedList<>();
+        //previous of first node is -1;
+        q.add(new Node(i, -1));
+        
+        while(!q.isEmpty())
+        {
+            int node = q.peek().node;
+            int prevNode = q.peek().prevNode;
+            q.poll();
+            bool[node] = true;
+            
+            //check for neighbours
+            for(Integer neigh : adj.get(node))
+            {
+                if(!bool[neigh])
+                {
+                    bool[neigh] = true;
+                    q.add(new Node(neigh, node));
+                }
+                //if neighbour is not equal to previous node i.e we have found the cycle
+                else if(neigh != prevNode)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }    
