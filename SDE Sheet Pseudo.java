@@ -2473,4 +2473,62 @@ public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
             }
         }
         return true;
-    }    
+    }   
+    
+    
+ //Day 23 (7. Bipartite Check)---> DFS
+
+
+public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+    {
+        //array to store color of each node
+        int color[] = new int[V];
+        //fill array with -1 becoz we want our colors as 0 and 1
+        for(int i = 0; i < V; i++)
+        {
+            color[i] = -1;
+        }
+        //loop for unconnected graph
+        for(int i = 0; i < V; i++)
+        {
+            //if any node is not colored
+            if(color[i] == -1)
+            {
+                //do bfs for that node
+                if(!dfs(i, color, adj)) //if it return not bipartite simply return false, no need to check for other componenets of graph
+                {
+                    return false;
+                }
+            }
+        }
+        //bipartite
+        return true;
+    }
+    boolean dfs(int Node, int[] color, ArrayList<ArrayList<Integer>>adj)
+    {
+        //this is only for first node i.e node is not colored
+        if(color[Node] == -1)
+        {
+            color[Node] = 0;
+        }
+        //for neighbours
+        for(Integer nb : adj.get(Node))
+        {
+            //if neighbour is not colored
+            if(color[nb] ==  -1)
+            {
+                //color neighbour
+                color[nb] = 1 - color[Node];
+                //recur for that neighbour, if found not bipartite then stop futher recursion
+                if(!dfs(nb, color, adj))
+                {
+                    return false;
+                }
+            }
+            else if(color[nb] == color[Node])
+            {
+                return false;
+            }
+        }
+          
+    
