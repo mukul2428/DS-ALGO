@@ -2311,7 +2311,7 @@ public static void main(String[] args) {
     }
 
 
-//Day 23 (4. Detect A cycle in Undirected Graph)
+//Day 23 (4. Detect A cycle in Undirected Graph)--->BFS
 
 
 //Function to detect cycle in an undirected graph.
@@ -2371,4 +2371,106 @@ public static void main(String[] args) {
             }
         }
         return false;
+    }    
+
+
+
+//Day 23 (4. Detect A cycle in Undirected Graph)--->DFS
+
+// 0-based indexing Graph
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        boolean vis[] = new boolean[V];
+        
+        for(int i = 0;i<V;i++) //loop for unconnected graph
+        {
+            if(vis[i] == false) 
+            {
+                if(checkForCycle(i, -1, vis, adj))
+                    return true; 
+            }
+        }
+        
+        return false; 
+    }
+    
+    public boolean checkForCycle(int node, int parent, boolean vis[], ArrayList<ArrayList<Integer>> adj) 
+    {
+        vis[node] = true; 
+        for(Integer it: adj.get(node))
+        {
+            if(vis[it] == false) 
+            {
+                //recursion for dfs
+                if(checkForCycle(it, node, vis, adj)) 
+                //if any time it retuen true then stop here
+                    return true; 
+            }
+            //if loop found i.e parent node is not equal to neighbour node
+            else if(it!=parent) 
+                return true; 
+        }
+        
+        return false; 
+    }
+
+
+
+//Day 23 (7. Bipartite Check)---> BFS
+
+
+
+public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
+    {
+        //array to store color of each node
+        int color[] = new int[V];
+        //fill array with -1 becoz we want our colors as 0 and 1
+        for(int i = 0; i < V; i++)
+        {
+            color[i] = -1;
+        }
+        //loop for unconnected graph
+        for(int i = 0; i < V; i++)
+        {
+            //if any node is not colored
+            if(color[i] == -1)
+            {
+                //do bfs for that node
+                if(!bfs(i, V, color, adj)) //if it return not bipartite simply return false, no need to check for other componenets of graph
+                {
+                    return false;
+                }
+            }
+        }
+        //bipartite
+        return true;
+    }
+    boolean bfs(int Node, int V, int[] color, ArrayList<ArrayList<Integer>>adj)
+    {
+        Queue<Integer> q = new LinkedList<>();
+        q.add(Node);
+        color[Node] = 0; //color first node as 0
+        
+        while(!q.isEmpty())
+        {
+            int n = q.poll();
+            
+            //check for neighbours
+            for(Integer neighbours : adj.get(n))
+            {
+                //if neighbour node is not colored
+                if(color[neighbours] == -1)
+                {
+                    q.add(neighbours);
+                    //color neighbour node with different color 
+                    color[neighbours] = 1 - color[n];
+                }
+                //if color is same then not bipartite
+                else if(color[neighbours] == color[n])
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }    
