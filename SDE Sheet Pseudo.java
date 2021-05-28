@@ -2413,6 +2413,169 @@ public static void main(String[] args) {
         
         return false; 
     }
+    
+    
+    
+//Day 23 (4. Detect A cycle in Directed Graph)--->DFS
+
+//Function to detect cycle in a directed graph.
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj)
+    {
+        boolean[] visited = new boolean[V];
+        boolean[] dfsvisit = new boolean[V];
+        
+        //loop useful for unnconnected and directed graphs
+        for(int i = 0; i < V; i++)
+        {
+            if(!visited[i])
+            {
+                //not need to check for other component if return true
+                if(checkCycle(i, visited, dfsvisit, adj))
+                {
+                    return true;
+                }
+            }
+        }
+        //false if no cycle detected
+        return false;
+    }
+    boolean checkCycle(int Node, boolean[] visited, boolean[] dfsvisit, ArrayList<ArrayList<Integer>> adj)
+    {
+        //first mark node visited then check for its neighbours
+        visited[Node] = true;
+        dfsvisit[Node] = true;
+        
+        //check for neighbours
+        for(Integer nb : adj.get(Node))
+        {
+            //if neighbour is not visited
+            if(!visited[nb])
+            {
+                //recur for neighbour
+                //not need to check for other nodes if return true
+                if(checkCycle(nb, visited, dfsvisit, adj))
+                {
+                    return true;
+                }
+            }
+            //if we found cycle i.e we encountered node which is already visited in current traversal 
+            else if(visited[nb] && dfsvisit[nb])
+            {
+                return true;
+            }
+        }
+        //if unable to find cycle then return back to other nodes by returning false and marking
+        //dfsvisit = false , as dfs traversal for current node is completed 
+        dfsvisit[Node] = false;
+        return false;
+    }    
+
+
+
+//Day 23 (5. Topological Sort)--->DFS
+
+
+    //Function to return list containing vertices in Topological order. 
+    //asume we are given dag(Directed acyclic graph)
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj) 
+    {
+        // add your code here
+        
+        int ans[] = new int[V];
+        boolean[] vis = new boolean[V]; 
+        
+        //stack used for sorting so that v pushed first in stack before u
+        Stack<Integer> stack = new Stack<>();
+        
+        //loop for dfs on every node
+        for(int i = 0; i < V; i++)
+        {
+            //if node is not visited
+            if(!vis[i])
+            {
+                vis[i] = true;
+                dfs(i, vis, stack, adj);
+            }
+        }
+        
+        //after stack is filled with all nodes and every node is visited, now print the topological sort
+        for(int i = 0; i < V; i++)
+        {
+            ans[i] = stack.pop();
+        }
+        return ans;
+    }
+    
+    static void dfs(int Node, boolean[] vis, Stack<Integer> stack, ArrayList<ArrayList<Integer>> adj)
+    {
+        for(Integer nb : adj.get(Node))
+        {
+            if(!vis[nb])
+            {
+                vis[nb] = true;
+                //recur for neighbour
+                dfs(nb, vis, stack, adj);
+            }
+        }
+        //put current node into stack after all of its adjacent nodes are visited
+        stack.push(Node);
+    }
+
+
+//Day 23 (5. Topological Sort)---> BFS(Kahn Algo)
+
+
+//assume we are given dag(Directed acyclic graph)
+    static int[] topoSort(int V, ArrayList<ArrayList<Integer>> adj) 
+    {
+        // add your code here
+        
+        int ans[] = new int[V];
+        //for indegree of every node
+        int inDegree[] = new int[V];
+        
+        //calculate indegree of every node
+        for(int i = 0; i < V; i++)
+        {
+            for(Integer nd : adj.get(i))
+            {
+                inDegree[nd]++;
+            }
+        }
+        
+        //for bfs
+        Queue<Integer> q = new LinkedList<>();
+        //add nodes to queue which has indegree 0, these nodes will be starting of topo sort
+        for(int i = 0; i < V; i++)
+        {
+            if(inDegree[i] == 0)
+            {
+                q.add(i);
+            }
+        }
+        
+        int index = 0;
+        
+        while(!q.isEmpty())
+        {
+            int nd = q.poll();
+            //first add node to ans
+            ans[index++] = nd;
+                
+            for(Integer nb : adj.get(nd))
+            {
+                //reduce indegree of every adjacent node
+                inDegree[nb] -= 1;
+                
+                if(inDegree[nb] == 0)
+                {
+                    q.add(nb);
+                }
+            }
+        }
+        
+        return ans;
+    }    
 
 
 
