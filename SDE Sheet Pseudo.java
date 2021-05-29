@@ -2470,6 +2470,40 @@ public static void main(String[] args) {
         return false;
     }    
 
+    
+ //(4. Detect A cycle in Directed Graph)--->BFS(Kahn's Algo)
+
+class Solution {
+    public boolean isCyclic(int N, ArrayList<ArrayList<Integer>> adj) {
+        int topo[] = new int[N]; 
+        int indegree[] = new int[N]; 
+        for(int i = 0;i<N;i++) {
+            for(Integer it: adj.get(i)) {
+                indegree[it]++; 
+            }
+        }
+        
+        Queue<Integer> q = new LinkedList<Integer>(); 
+        for(int i = 0;i<N;i++) {
+            if(indegree[i] == 0) {
+                q.add(i); 
+            }
+        }
+        int cnt = 0;
+        while(!q.isEmpty()) {
+            Integer node = q.poll(); 
+            cnt++; 
+            for(Integer it: adj.get(node)) {
+                indegree[it]--; 
+                if(indegree[it] == 0) {
+                    q.add(it); 
+                }
+            }
+        }
+        if(cnt == N) return false; 
+        return true; 
+    }
+}        
 
 
 //Day 23 (5. Topological Sort)--->DFS
@@ -2693,5 +2727,131 @@ public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)
                 return false;
             }
         }
+        
+        
           
+//Shotest Path in Undirected Graph with Unit weights
+
+
+private void shortestPath(ArrayList<ArrayList<Integer>> adj,int N,int src) 
+{ 
     
+    int[] dist = new int[N]; 
+    //putting largest value for distance of all nodes from source
+    for(int i = 0; i < N; i++) 
+        dist[i] = 1000000000; 
+
+    Queue<Integer> q=new LinkedList<>();
+    
+    //first node
+    dist[src] = 0;
+    q.add(src); 
+
+    while(q.isEmpty()==false) 
+    { 
+        int node = q.poll();  
+         
+        for(Integer it : adj.get(node))
+        {
+            //if (distance of current node from source + 1) is less than distance of adjacent node from source
+            if(dist[node] + 1 < dist[it])
+            {
+                dist[it] = dist[node] + 1;
+                q.add(it);
+            }
+        } 
+    }
+    
+    //print distance of every node from source
+    for(int i = 0; i < N; i++) 
+    {
+        System.out.print(dist[i] + " "); 
+    }
+} 
+
+
+
+//Shortest path in directed acyclic graph(dag)
+
+class Pair
+{
+    private int v;
+    private int weight;
+    Pair(int _v, int _w) { v = _v; weight = _w; }
+    int getV() { return v; }
+    int getWeight() { return weight; }
+}
+
+class Main
+{
+    void topologicalSortUtil(int node, Boolean visited[], Stack stack, ArrayList<ArrayList<Pair>> adj)
+    {
+
+        visited[node] = true;
+        for(Pair it: adj.get(node)) {
+            if(visited[it.getV()] == false) {
+                topologicalSortUtil(it.getV(), visited, stack, adj);
+            }
+        }
+        stack.add(node);
+    }
+
+    void shortestPath(int s, ArrayList<ArrayList<Pair>> adj, int N)
+    {
+        Stack stack = new Stack();
+        int dist[] = new int[N];
+
+        Boolean visited[] = new Boolean[N];
+        for (int i = 0; i < N; i++)
+            visited[i] = false;
+
+        for (int i = 0; i < N; i++)
+            if (visited[i] == false)
+                topologicalSortUtil(i, visited, stack, adj);
+
+        for (int i = 0; i < N; i++)
+            dist[i] = Integer.MAX_VALUE;
+        dist[s] = 0;
+
+        while (stack.empty() == false)
+        {
+            int node = (int)stack.pop();
+
+            if (dist[node] != Integer.MAX_VALUE)
+            {
+                for(Pair it: adj.get(node)) {
+                    if(dist[node] + it.getWeight() < dist[it.getV()]) {
+                        dist[it.getV()] = dist[node] + it.getWeight(); 
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < N; i++)
+        {
+            if (dist[i] == Integer.MAX_VALUE)
+                System.out.print( "INF ");
+            else
+                System.out.print( dist[i] + " ");
+        }
+    }
+    public static void main(String args[])
+    {
+        int n = 6;
+        ArrayList<ArrayList<Pair> > adj = new ArrayList<ArrayList<Pair> >();
+        
+        for (int i = 0; i < n; i++) 
+            adj.add(new ArrayList<Pair>());
+            
+        adj.get(0).add(new Pair(1, 2));
+        adj.get(0).add(new Pair(4, 1));
+        adj.get(1).add(new Pair(2, 3));
+        adj.get(2).add(new Pair(3, 6));
+        adj.get(4).add(new Pair(2, 2));
+        adj.get(4).add(new Pair(5, 4));
+        adj.get(5).add(new Pair(3, 1));
+        Main obj = new Main(); 
+        obj.shortestPath(0, adj, n); 
+        
+    }
+}    
