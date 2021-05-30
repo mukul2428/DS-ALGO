@@ -2854,4 +2854,162 @@ class Main
         obj.shortestPath(0, adj, n); 
         
     }
-}    
+} 
+       
+        
+//Day 24 (2. Djisktra’s Algorithm)
+
+
+//comparator for priority queue
+class Node implements Comparator<Node>
+{
+    private int v;
+    private int weight;
+    
+    Node(int _v, int _w) { v = _v; weight = _w; }
+    
+    Node() {}
+    
+    int getV() { return v; }
+    int getWeight() { return weight; }
+    
+    @Override
+    public int compare(Node node1, Node node2) 
+    { 
+        if (node1.weight < node2.weight) 
+            return -1; 
+        if (node1.weight > node2.weight) 
+            return 1; 
+        return 0; 
+    } 
+}
+
+class Main
+{
+    void shortestPath(int s, ArrayList<ArrayList<Node>> adj, int N)
+    {
+        int dist[] = new int[N];
+        
+        //storing max distance
+        for(int i = 0;i<N;i++) dist[i] = 100000000;
+        dist[s] = 0; 
+        
+
+        //want minumum element first so priority queue
+        PriorityQueue<Node> pq = new PriorityQueue<Node>(N, new Node());
+        pq.add(new Node(s, 0));
+        
+        while(pq.size() > 0) {
+            Node node = pq.poll();
+            
+            for(Node it: adj.get(node.getV())) {
+                if(dist[node.getV()] + it.getWeight() < dist[it.getV()]) {
+                    dist[it.getV()] = dist[node.getV()] + it.getWeight(); 
+                    pq.add(new Node(it.getV(), dist[it.getV()]));
+                }
+            }
+        }
+        
+        for (int i = 0; i < N; i++)
+        {
+            System.out.print( dist[i] + " ");
+        }
+    }
+    public static void main(String args[])
+    {
+        int n = 5;
+        ArrayList<ArrayList<Node> > adj = new ArrayList<ArrayList<Node> >();
+        
+        for (int i = 0; i < n; i++) 
+            adj.add(new ArrayList<Node>());
+            
+        adj.get(0).add(new Node(1, 2));
+        adj.get(1).add(new Node(0, 2));
+        
+        adj.get(1).add(new Node(2, 4));
+        adj.get(2).add(new Node(1, 4));
+        
+        adj.get(0).add(new Node(3, 1));
+        adj.get(3).add(new Node(0, 1));
+        
+        adj.get(3).add(new Node(2, 3));
+        adj.get(2).add(new Node(3, 3));
+        
+        adj.get(1).add(new Node(4, 5));
+        adj.get(4).add(new Node(1, 5));
+        
+        adj.get(2).add(new Node(4, 1));
+        adj.get(4).add(new Node(2, 1));
+        
+        Main obj = new Main(); 
+        obj.shortestPath(0, adj, n); 
+        
+    }
+}
+        
+        
+        
+//Day 24 (5. MST using Prim’s Algo) ---> GFG
+
+
+//Function to find sum of weights of edges of the Minimum Spanning Tree.
+static int spanningTree(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj) 
+{
+    // Add your code here
+    
+    boolean mst[] = new boolean[V];
+    int parent[] = new int[V];
+    int key[] = new int[V];
+    
+    for(int i = 0; i < V; i++)
+    {
+        //store max. distance for every node
+        key[i] = Integer.MAX_VALUE;
+        //parent for every node is -1
+        parent[i] = -1; 
+    }
+    
+    key[0] = 0;
+
+    //V-1 for edges, as mast has v-1 edges 
+    for(int i = 0; i < V - 1; i++)
+    {
+        //taking out minumum edge weight and from that weight take node 
+        int min = Integer.MAX_VALUE, u = 0;
+        for(int j = 0; j < V; j++)
+        {
+            //if that node is not taken in spanning tree and its weight is minimum
+            if(!mst[j] && key[j] < min)
+            {
+                min = key[j];
+                //finding minumum weighted node from key[]
+                u = j;
+            }
+        }
+        //took node in spanning tree so mark true in mst
+        mst[u] = true;
+        
+        for(ArrayList<Integer> x : adj.get(u))
+        {
+            int adjNodeValue = x.get(0);
+            int adjNodeWeight = x.get(1);
+            //if adjacent node is not a part of mst and from this path its edge weight is less than previous 
+                                                    //weight of that node in key array
+            if(!mst[adjNodeValue] && adjNodeWeight < key[adjNodeValue])
+            {
+                //make curr node as parent of its adjacent node
+                parent[adjNodeValue] = u;
+                //update new edge weight of node
+                key[adjNodeValue] = adjNodeWeight;
+            }
+            
+        }
+    }
+    //setting weights of mst according to key array
+    int count = 0;
+    for(int i = 0; i < V; i++)
+    {
+        count += key[i];
+    }
+    return count;
+}        
